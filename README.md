@@ -151,7 +151,7 @@ static void OnGroupValuesChanged(object sender, OpcDaItemValuesChangedEventArgs 
 * 在 Visual Studio 中，设置你的项目使用 "Prefer 32-bit"：项目属性 → 构建 → 平台目标 "Prefer 32-bit"，这样代码会编译为 32 位。
 
 ## API 文档
-Comming soon...
+即将上线...
 
-##许可证
+## 许可证
 The MIT License (MIT) – [LICENSE](https://github.com/titanium-as/TitaniumAS.Opc.Client/blob/master/LICENSE).
