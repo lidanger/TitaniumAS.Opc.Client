@@ -146,7 +146,7 @@ static void OnGroupValuesChanged(object sender, OpcDaItemValuesChangedEventArgs 
 ```
 
 ## 错误处理
-* 首先检查系统是否安装 Opc Core Components (https://opcfoundation.org/developer-tools/developer-kits-classic/core-components)。很有可能你没有安装 OPCEnum 服务。
+* 首先检查系统是否安装 [Opc Core Components] (https://opcfoundation.org/developer-tools/developer-kits-classic/core-components)。很有可能你没有安装 OPCEnum 服务。
 * 要在 NUnit 中运行单元测试，应该配置使用 x86 环境。
 * 在 Visual Studio 中，设置你的项目使用 "Prefer 32-bit"：项目属性 → 构建 → 平台目标 "Prefer 32-bit"，这样代码会编译为 32 位。
 
