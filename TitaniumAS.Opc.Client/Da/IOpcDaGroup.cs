@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Threading;
-using System.Threading.Tasks;
+
 using TitaniumAS.Opc.Client.Common;
 
 namespace TitaniumAS.Opc.Client.Da
@@ -155,20 +155,20 @@ namespace TitaniumAS.Opc.Client.Da
         /// <returns>The values of the group items.</returns>
         OpcDaItemValue[] Read(IList<OpcDaItem> items, OpcDaDataSource dataSource = OpcDaDataSource.Cache);
 
-        /// <summary>
-        /// Reads the specified group items asynchronously.
-        /// </summary>
-        /// <param name="items">The group items.</param>
-        /// <param name="token">The task cancellation token.</param>
-        /// <returns>The values of the group items.</returns>
-        Task<OpcDaItemValue[]> ReadAsync(IList<OpcDaItem> items, CancellationToken token);
+        ///// <summary>
+        ///// Reads the specified group items asynchronously.
+        ///// </summary>
+        ///// <param name="items">The group items.</param>
+        ///// <param name="token">The task cancellation token.</param>
+        ///// <returns>The values of the group items.</returns>
+        //Task<OpcDaItemValue[]> ReadAsync(IList<OpcDaItem> items, CancellationToken token);
 
-        /// <summary>
-        /// Reads the specified group items asynchronously.
-        /// </summary>
-        /// <param name="items">The group items.</param>
-        /// <returns>The values of the group items.</returns>
-        Task<OpcDaItemValue[]> ReadAsync(IList<OpcDaItem> items);
+        ///// <summary>
+        ///// Reads the specified group items asynchronously.
+        ///// </summary>
+        ///// <param name="items">The group items.</param>
+        ///// <returns>The values of the group items.</returns>
+        //Task<OpcDaItemValue[]> ReadAsync(IList<OpcDaItem> items);
 
         /// <summary>
         /// Reads the specified group items using MaxAge. If the information in the cache is within the MaxAge, then the data will be obtained from the cache, otherwise the server must access the device for the requested information.
@@ -189,71 +189,71 @@ namespace TitaniumAS.Opc.Client.Da
         OpcDaItemValue[] ReadMaxAge(IList<OpcDaItem> items, IList<TimeSpan> maxAge);
 
 
-        /// <summary>
-        /// Asynchronously reads the specified group items using MaxAge. If the information in the cache is within the MaxAge, then the data will be obtained from the cache, otherwise the server must access the device for the requested information.
-        /// </summary>
-        /// <param name="items">The group items.</param>
-        /// <param name="maxAge">The MaxAge for all items.</param>
-        /// <param name="token">The task cancellation token.</param>
-        /// <returns>The values of the group items.</returns>
-        Task<OpcDaItemValue[]> ReadMaxAgeAsync(IList<OpcDaItem> items, TimeSpan maxAge,
-            CancellationToken token);
+        ///// <summary>
+        ///// Asynchronously reads the specified group items using MaxAge. If the information in the cache is within the MaxAge, then the data will be obtained from the cache, otherwise the server must access the device for the requested information.
+        ///// </summary>
+        ///// <param name="items">The group items.</param>
+        ///// <param name="maxAge">The MaxAge for all items.</param>
+        ///// <param name="token">The task cancellation token.</param>
+        ///// <returns>The values of the group items.</returns>
+        //Task<OpcDaItemValue[]> ReadMaxAgeAsync(IList<OpcDaItem> items, TimeSpan maxAge,
+        //    CancellationToken token);
 
-        /// <summary>
-        /// Asynchronously reads the specified group items using MaxAge. If the information in the cache is within the MaxAge, then the data will be obtained from the cache, otherwise the server must access the device for the requested information.
-        /// </summary>
-        /// <param name="items">The group items.</param>
-        /// <param name="maxAge">The MaxAge for all items.</param>
-        /// <returns>The values of the group items.</returns>
-        Task<OpcDaItemValue[]> ReadMaxAgeAsync(IList<OpcDaItem> items, TimeSpan maxAge);
+        ///// <summary>
+        ///// Asynchronously reads the specified group items using MaxAge. If the information in the cache is within the MaxAge, then the data will be obtained from the cache, otherwise the server must access the device for the requested information.
+        ///// </summary>
+        ///// <param name="items">The group items.</param>
+        ///// <param name="maxAge">The MaxAge for all items.</param>
+        ///// <returns>The values of the group items.</returns>
+        //Task<OpcDaItemValue[]> ReadMaxAgeAsync(IList<OpcDaItem> items, TimeSpan maxAge);
 
-        /// <summary>
-        /// Asynchronously reads the specified group items using MaxAge. If the information in the cache is within the MaxAge, then the data will be obtained from the cache, otherwise the server must access the device for the requested information.
-        /// </summary>
-        /// <param name="items">The group items.</param>
-        /// <param name="maxAge">The list of MaxAges for the group items.</param>
-        /// <param name="token">The task cancellation token.</param>
-        /// <returns>The values of the group items.</returns>
-        Task<OpcDaItemValue[]> ReadMaxAgeAsync(IList<OpcDaItem> items, IList<TimeSpan> maxAge,
-            CancellationToken token);
+        ///// <summary>
+        ///// Asynchronously reads the specified group items using MaxAge. If the information in the cache is within the MaxAge, then the data will be obtained from the cache, otherwise the server must access the device for the requested information.
+        ///// </summary>
+        ///// <param name="items">The group items.</param>
+        ///// <param name="maxAge">The list of MaxAges for the group items.</param>
+        ///// <param name="token">The task cancellation token.</param>
+        ///// <returns>The values of the group items.</returns>
+        //Task<OpcDaItemValue[]> ReadMaxAgeAsync(IList<OpcDaItem> items, IList<TimeSpan> maxAge,
+        //    CancellationToken token);
 
-        /// <summary>
-        /// Asynchronously reads the specified group items using MaxAge. If the information in the cache is within the MaxAge, then the data will be obtained from the cache, otherwise the server must access the device for the requested information.
-        /// </summary>
-        /// <param name="items">The group items.</param>
-        /// <param name="maxAge">The list of MaxAges for the group items.</param>
-        /// <returns>The values of the group items.</returns>
-        Task<OpcDaItemValue[]> ReadMaxAgeAsync(IList<OpcDaItem> items, IList<TimeSpan> maxAge);
+        ///// <summary>
+        ///// Asynchronously reads the specified group items using MaxAge. If the information in the cache is within the MaxAge, then the data will be obtained from the cache, otherwise the server must access the device for the requested information.
+        ///// </summary>
+        ///// <param name="items">The group items.</param>
+        ///// <param name="maxAge">The list of MaxAges for the group items.</param>
+        ///// <returns>The values of the group items.</returns>
+        //Task<OpcDaItemValue[]> ReadMaxAgeAsync(IList<OpcDaItem> items, IList<TimeSpan> maxAge);
 
-        /// <summary>
-        /// Asynchronously refreshes all active group items (whether they have changed or not). Inactive items are not included in the callback.
-        /// </summary>
-        /// <param name="dataSource">The data source either cache or device.</param>
-        /// <param name="token">The task cancellation token.</param>
-        /// <returns>The values of the group items.</returns>
-        Task<OpcDaItemValue[]> RefreshAsync(OpcDaDataSource dataSource, CancellationToken token);
+        ///// <summary>
+        ///// Asynchronously refreshes all active group items (whether they have changed or not). Inactive items are not included in the callback.
+        ///// </summary>
+        ///// <param name="dataSource">The data source either cache or device.</param>
+        ///// <param name="token">The task cancellation token.</param>
+        ///// <returns>The values of the group items.</returns>
+        //Task<OpcDaItemValue[]> RefreshAsync(OpcDaDataSource dataSource, CancellationToken token);
 
-        /// <summary>
-        /// Asynchronously refreshes all active group items (whether they have changed or not). Inactive items are not included in the callback.
-        /// </summary>
-        /// <param name="dataSource">The data source either cache or device.</param>
-        /// <returns>The values of the group items.</returns>
-        Task<OpcDaItemValue[]> RefreshAsync(OpcDaDataSource dataSource);
+        ///// <summary>
+        ///// Asynchronously refreshes all active group items (whether they have changed or not). Inactive items are not included in the callback.
+        ///// </summary>
+        ///// <param name="dataSource">The data source either cache or device.</param>
+        ///// <returns>The values of the group items.</returns>
+        //Task<OpcDaItemValue[]> RefreshAsync(OpcDaDataSource dataSource);
 
-        /// <summary>
-        /// Asynchronously refreshes all active group items (whether they have changed or not) using MaxAge. Inactive items are not included in the callback. Some of the values may be obtained from cache while others could be obtained from the device depending on the "freshness" of the data in the cache.
-        /// </summary>
-        /// <param name="maxAge">The MaxAge value, which will determine the MaxAge for all active items in the group.</param>
-        /// <param name="token">The task cancellation token.</param>
-        /// <returns>The values of the group items.</returns>
-        Task<OpcDaItemValue[]> RefreshMaxAgeAsync(TimeSpan maxAge, CancellationToken token);
+        ///// <summary>
+        ///// Asynchronously refreshes all active group items (whether they have changed or not) using MaxAge. Inactive items are not included in the callback. Some of the values may be obtained from cache while others could be obtained from the device depending on the "freshness" of the data in the cache.
+        ///// </summary>
+        ///// <param name="maxAge">The MaxAge value, which will determine the MaxAge for all active items in the group.</param>
+        ///// <param name="token">The task cancellation token.</param>
+        ///// <returns>The values of the group items.</returns>
+        //Task<OpcDaItemValue[]> RefreshMaxAgeAsync(TimeSpan maxAge, CancellationToken token);
 
-        /// <summary>
-        /// Asynchronously refreshes all active group items (whether they have changed or not) using MaxAge. Inactive items are not included in the callback. Some of the values may be obtained from cache while others could be obtained from the device depending on the "freshness" of the data in the cache.
-        /// </summary>
-        /// <param name="maxAge">The MaxAge value, which will determine the MaxAge for all active items in the group.</param>
-        /// <returns>The values of the group items.</returns>
-        Task<OpcDaItemValue[]> RefreshMaxAgeAsync(TimeSpan maxAge);
+        ///// <summary>
+        ///// Asynchronously refreshes all active group items (whether they have changed or not) using MaxAge. Inactive items are not included in the callback. Some of the values may be obtained from cache while others could be obtained from the device depending on the "freshness" of the data in the cache.
+        ///// </summary>
+        ///// <param name="maxAge">The MaxAge value, which will determine the MaxAge for all active items in the group.</param>
+        ///// <returns>The values of the group items.</returns>
+        //Task<OpcDaItemValue[]> RefreshMaxAgeAsync(TimeSpan maxAge);
 
         /// <summary>
         /// Writes values to one or more items in a group.
@@ -263,23 +263,23 @@ namespace TitaniumAS.Opc.Client.Da
         /// <returns>Array of HRESULTs indicating the success of the individual item Writes.</returns>
         HRESULT[] Write(IList<OpcDaItem> items, object[] values);
 
-        /// <summary>
-        /// Asynchronously writes values to one or more items in a group.
-        /// </summary>
-        /// <param name="items">The group items.</param>
-        /// <param name="values">The list of values to be written to the items.</param>
-        /// <param name="token">The task cancellation token.</param>
-        /// <returns>Array of HRESULTs indicating the success of the individual item Writes.</returns>
-        Task<HRESULT[]> WriteAsync(IList<OpcDaItem> items, IList<object> values,
-            CancellationToken token);
+        ///// <summary>
+        ///// Asynchronously writes values to one or more items in a group.
+        ///// </summary>
+        ///// <param name="items">The group items.</param>
+        ///// <param name="values">The list of values to be written to the items.</param>
+        ///// <param name="token">The task cancellation token.</param>
+        ///// <returns>Array of HRESULTs indicating the success of the individual item Writes.</returns>
+        //Task<HRESULT[]> WriteAsync(IList<OpcDaItem> items, IList<object> values,
+        //    CancellationToken token);
 
-        /// <summary>
-        /// Asynchronously writes values to one or more items in a group.
-        /// </summary>
-        /// <param name="items">The group items.</param>
-        /// <param name="values">The list of values to be written to the items.</param>
-        /// <returns>Array of HRESULTs indicating the success of the individual item Writes.</returns>
-        Task<HRESULT[]> WriteAsync(IList<OpcDaItem> items, IList<object> values);
+        ///// <summary>
+        ///// Asynchronously writes values to one or more items in a group.
+        ///// </summary>
+        ///// <param name="items">The group items.</param>
+        ///// <param name="values">The list of values to be written to the items.</param>
+        ///// <returns>Array of HRESULTs indicating the success of the individual item Writes.</returns>
+        //Task<HRESULT[]> WriteAsync(IList<OpcDaItem> items, IList<object> values);
 
         /// <summary>
         /// Writes one or more values, qualities and timestamps for the items specified. If a client attempts to write VQ, VT, or VQT it should expect that the server will write them all or none at all.
@@ -289,23 +289,23 @@ namespace TitaniumAS.Opc.Client.Da
         /// <returns>Array of HRESULTs indicating the success of the individual item Writes.</returns>
         HRESULT[] WriteVQT(IList<OpcDaItem> items, IList<OpcDaVQT> values);
 
-        /// <summary>
-        /// Asynchronously writes one or more values, qualities and timestamps for the items specified. If a client attempts to write VQ, VT, or VQT it should expect that the server will write them all or none at all.
-        /// </summary>
-        /// <param name="items">The group items.</param>
-        /// <param name="values">The list of values, qualities and timestamps.</param>
-        /// <param name="token">The task cancellation token.</param>
-        /// <returns>Array of HRESULTs indicating the success of the individual item Writes.</returns>
-        Task<HRESULT[]> WriteVQTAsync(IList<OpcDaItem> items, IList<OpcDaVQT> values,
-            CancellationToken token);
+        ///// <summary>
+        ///// Asynchronously writes one or more values, qualities and timestamps for the items specified. If a client attempts to write VQ, VT, or VQT it should expect that the server will write them all or none at all.
+        ///// </summary>
+        ///// <param name="items">The group items.</param>
+        ///// <param name="values">The list of values, qualities and timestamps.</param>
+        ///// <param name="token">The task cancellation token.</param>
+        ///// <returns>Array of HRESULTs indicating the success of the individual item Writes.</returns>
+        //Task<HRESULT[]> WriteVQTAsync(IList<OpcDaItem> items, IList<OpcDaVQT> values,
+        //    CancellationToken token);
 
-        /// <summary>
-        /// Asynchronously writes one or more values, qualities and timestamps for the items specified. If a client attempts to write VQ, VT, or VQT it should expect that the server will write them all or none at all.
-        /// </summary>
-        /// <param name="items">The group items.</param>
-        /// <param name="values">The list of values, qualities and timestamps.</param>
-        /// <returns>Array of HRESULTs indicating the success of the individual item Writes.</returns>
-        Task<HRESULT[]> WriteVQTAsync(IList<OpcDaItem> items, IList<OpcDaVQT> values);
+        ///// <summary>
+        ///// Asynchronously writes one or more values, qualities and timestamps for the items specified. If a client attempts to write VQ, VT, or VQT it should expect that the server will write them all or none at all.
+        ///// </summary>
+        ///// <param name="items">The group items.</param>
+        ///// <param name="values">The list of values, qualities and timestamps.</param>
+        ///// <returns>Array of HRESULTs indicating the success of the individual item Writes.</returns>
+        //Task<HRESULT[]> WriteVQTAsync(IList<OpcDaItem> items, IList<OpcDaVQT> values);
 
         /// <summary>
         /// Add one or more items to the group.

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
-using System.Threading.Tasks;
+
 using TitaniumAS.Opc.Client.Common;
 
 namespace TitaniumAS.Opc.Client.Da
@@ -107,7 +107,7 @@ namespace TitaniumAS.Opc.Client.Da
         /// Asynchronously connects to the OpcDa server
         /// </summary>
         /// <returns>A task to wait upon</returns>
-        Task ConnectAsync();
+        IAsyncResult ConnectAsync();
 
         /// <summary>
         /// Releases connection to COM server for the server instance.

@@ -13,7 +13,7 @@ namespace TitaniumAS.Opc.Client.Da.Wrappers
         {
             if (comObject == null) throw new ArgumentNullException("comObject");
             ComObject = DoComCall(comObject, "IUnknown::QueryInterface<IOPCAsyncIO3>",
-                () => comObject.QueryInterface<IOPCAsyncIO3>());
+                () => Com.QueryInterface<IOPCAsyncIO3>(comObject));
         }
 
         private IOPCAsyncIO3 ComObject { get; set; }

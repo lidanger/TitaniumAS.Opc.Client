@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections;
-using System.Linq;
+
 using System.Runtime.InteropServices;
 using System.Text;
 using Common.Logging;
 using TitaniumAS.Opc.Client.Common.Wrappers;
+using System.Collections.Generic;
 
 namespace TitaniumAS.Opc.Client.Common
 {
-    public abstract class ComWrapper: IComWrapper
+    public abstract class ComWrapper : IComWrapper
     {
         public static event EventHandler<RpcFailedEventArgs> RpcFailed;
         private const int RPC_S_SERVER_UNAVAILABLE = unchecked((int)0x800706BA);
@@ -31,13 +32,15 @@ namespace TitaniumAS.Opc.Client.Common
             if (handler != null) handler(this, args);
         }
 
-        public TResult DoComCall<TResult>(object comObject, string methodName, Func<TResult> comAction, params object[] arguments)
+        public delegate T ComActionFunc<T>();
+
+        public TResult DoComCall<TResult>(object comObject, string methodName, ComActionFunc<TResult> comAction, params object[] arguments)
         {
             try
             {
-                Log.Trace(m => m("Calling '{0}' Object: {1} {2}", methodName, comObject.GetHashCode(),ArgumentsToString(arguments)));
+                Log.Trace(m => m("Calling '{0}' Object: {1} {2}", methodName, comObject.GetHashCode(), ArgumentsToString(arguments)));
                 var result = comAction();
-                Log.Trace(m => m("Success: '{0}' Object: {1} result: {2}", methodName, comObject.GetHashCode(),ResultToString(result)));
+                Log.Trace(m => m("Success: '{0}' Object: {1} result: {2}", methodName, comObject.GetHashCode(), ResultToString(result)));
                 return result;
             }
             catch (InvalidCastException ex) //workaround for correct Com.QueryInterface calls
@@ -53,7 +56,7 @@ namespace TitaniumAS.Opc.Client.Common
             }
             catch (COMException ex)
             {
-                var errorString = string.Format("Error: {0} Method name: {1} Object: {2}", ex, methodName,comObject.GetHashCode());
+                var errorString = string.Format("Error: {0} Method name: {1} Object: {2}", ex, methodName, comObject.GetHashCode());
                 Log.Error(errorString);
                 if (IsRpcError(ex.ErrorCode))
                 {
@@ -69,7 +72,12 @@ namespace TitaniumAS.Opc.Client.Common
             var collection = result as IEnumerable;
             if (collection != null)
             {
-                return string.Join(",", collection);
+                var lst = new List<string>();
+                foreach (var item in collection)
+                {
+                    lst.Add(item.ToString());
+                }
+                return string.Join(",", lst.ToArray());
             }
             else
             {
@@ -84,15 +92,20 @@ namespace TitaniumAS.Opc.Client.Common
             {
                 if (argument is IEnumerable)
                 {
-                    builder.AppendFormat("[{0}]", string.Join(", ", argument));
+                    var lst = new List<string>();
+                    foreach (var arg in argument as IEnumerable)
+                    {
+                        lst.Add(arg.ToString());
+                    }
+                    builder.AppendFormat("[{0}]", string.Join(", ", lst.ToArray()));
                 }
-                else 
+                else
                 {
                     builder.AppendFormat(", {0}", argument);
                 }
 
             }
-            if (arguments.Any())
+            if (arguments.Length > 0)
             {
                 return string.Format("Arguments: {0}", builder);
             }
@@ -102,7 +115,9 @@ namespace TitaniumAS.Opc.Client.Common
             }
         }
 
-        public void DoComCall(object comObject, string methodName, Action comAction, params object[] arguments)
+        public delegate void ComAction();
+
+        public void DoComCall(object comObject, string methodName, ComAction comAction, params object[] arguments)
         {
             try
             {
@@ -121,7 +136,7 @@ namespace TitaniumAS.Opc.Client.Common
                 }
                 throw;
             }
-            catch (COMException ex) 
+            catch (COMException ex)
             {
                 var errorString = string.Format("Error: {0} Method name: {1} Object: {2}", ex, methodName, comObject.GetHashCode());
                 Log.Error(errorString);

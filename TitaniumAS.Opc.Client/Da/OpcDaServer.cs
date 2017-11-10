@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using System.Linq;
+
 using Common.Logging;
 using TitaniumAS.Opc.Client.Common;
 using TitaniumAS.Opc.Client.Common.Internal;
@@ -15,7 +15,7 @@ using TitaniumAS.Opc.Client.Interop.Common;
 using TitaniumAS.Opc.Client.Interop.Helpers;
 using TitaniumAS.Opc.Client.Interop.System;
 using System.Threading;
-using System.Threading.Tasks;
+
 
 namespace TitaniumAS.Opc.Client.Da
 {
@@ -121,12 +121,12 @@ namespace TitaniumAS.Opc.Client.Da
             Log.TraceFormat("Connecting to '{0}' opc server", Uri);
 
             var enumerator = new OpcServerEnumeratorAuto();
-            Tuple<string, Guid> hostAndCLSID = UrlParser.Parse(
+            KeyValuePair<string, Guid> hostAndCLSID = UrlParser.Parse(
                 Uri,
-                (host, progId) => new Tuple<string, Guid>(host, enumerator.CLSIDFromProgId(progId, host)),
-                (host, clsid) => new Tuple<string, Guid>(host, clsid));
+                (host, progId) => new KeyValuePair<string, Guid>(host, enumerator.CLSIDFromProgId(progId, host)),
+                (host, clsid) => new KeyValuePair<string, Guid>(host, clsid));
 
-            ComObject = Com.CreateInstanceWithBlanket(hostAndCLSID.Item2, hostAndCLSID.Item1, null, ComProxyBlanket);
+            ComObject = Com.CreateInstanceWithBlanket(hostAndCLSID.Value, hostAndCLSID.Key, null, ComProxyBlanket);
             _shutdownConnectionPoint.TryConnect(ComObject);
 
             Log.TraceFormat("Connected to '{0}' opc server.", Uri);
@@ -141,6 +141,8 @@ namespace TitaniumAS.Opc.Client.Da
             OnConnectionStateChanged(true);
         }
 
+        public delegate void ConnectTask();
+
         /// <summary>
         /// Asynchronout connect method
         /// </summary>
@@ -148,9 +150,10 @@ namespace TitaniumAS.Opc.Client.Da
         /// A running task to wait on for connect
         /// </returns>
         /// <seealso cref="Connect()"/>
-        public Task ConnectAsync()
+        public IAsyncResult ConnectAsync()
         {
-            return Task.Factory.StartNew(() => { Connect(); });
+            ConnectTask task = () => { Connect(); };
+            return task.BeginInvoke(null, null);
         }
 
         private void DisconnectImpl(bool rpcFailed = false)
@@ -169,7 +172,7 @@ namespace TitaniumAS.Opc.Client.Da
             {
                 try
                 {
-                    ComObject.ReleaseComServer();
+                    Com.ReleaseComServer(ComObject);
                 }
                 catch (Exception ex)
                 {
@@ -240,7 +243,13 @@ namespace TitaniumAS.Opc.Client.Da
         public CultureInfo[] QueryAvailableCultures()
         {
             CheckConnected();
-            return As<OpcCommon>().QueryAvailableLocaleIDs().Select(CultureHelper.GetCultureInfo).ToArray();
+            var arr = As<OpcCommon>().QueryAvailableLocaleIDs();
+            var lst = new List<CultureInfo>();
+            for (int i = 0; i < arr.Length; i++)
+            {
+                lst.Add(CultureHelper.GetCultureInfo(arr[i]));
+            }
+            return lst.ToArray();
         }
 
         /// <summary>
@@ -407,7 +416,7 @@ namespace TitaniumAS.Opc.Client.Da
             // Dispose old groups
             foreach (OpcDaGroup @group in _groups)
             {
-                ((IDisposable) @group).Dispose();
+                ((IDisposable)@group).Dispose();
                 OnGroupsChanged(new OpcDaServerGroupsChangedEventArgs(null, @group));
             }
             _groups.Clear();
@@ -429,7 +438,7 @@ namespace TitaniumAS.Opc.Client.Da
             }
             catch (Exception ex)
             {
-                Log.Error("Disconnect failed.",ex);
+                Log.Error("Disconnect failed.", ex);
             }
             try
             {
@@ -473,7 +482,7 @@ namespace TitaniumAS.Opc.Client.Da
             {
                 if (ComObject == null)
                     return default(T);
-                return (T) Activator.CreateInstance(typeof (T), ComObject, this);
+                return (T)Activator.CreateInstance(typeof(T), ComObject, this);
             }
             catch
             {
@@ -495,7 +504,7 @@ namespace TitaniumAS.Opc.Client.Da
         {
             foreach (OpcDaGroup opcDaGroup in _groups.ToArray())
             {
-                TryRemoveGroup(opcDaGroup,rpcFailed);
+                TryRemoveGroup(opcDaGroup, rpcFailed);
             }
             _groups.Clear();
         }
@@ -519,17 +528,22 @@ namespace TitaniumAS.Opc.Client.Da
 
         private List<string> EnumerateGroupNames(OpcDaEnumScope scope = OpcDaEnumScope.All)
         {
-            object enumeratorObj = As<OpcServer>().CreateGroupEnumerator((int) scope);
-            var enumerator = (IEnumString) enumeratorObj;
-            return enumerator.EnumareateAllAndRelease(OpcConfiguration.BatchSize);
+            object enumeratorObj = As<OpcServer>().CreateGroupEnumerator((int)scope);
+            var enumerator = (IEnumString)enumeratorObj;
+            return EnumHelpers.EnumareateAllAndRelease(enumerator, OpcConfiguration.BatchSize);
         }
 
         private List<OpcDaGroup> EnumerateGroups(OpcDaEnumScope scope = OpcDaEnumScope.All)
         {
-            object enumeratorObj = As<OpcServer>().CreateGroupEnumerator((int) scope);
-            var enumerator = (IEnumUnknown) enumeratorObj;
-            List<object> interfaces = enumerator.EnumareateAllAndRelease(OpcConfiguration.BatchSize);
-            return interfaces.Select(i => new OpcDaGroup(i, this)).ToList();
+            object enumeratorObj = As<OpcServer>().CreateGroupEnumerator((int)scope);
+            var enumerator = (IEnumUnknown)enumeratorObj;
+            List<object> interfaces = EnumHelpers.EnumareateAllAndRelease(enumerator, OpcConfiguration.BatchSize);
+            var lst = new List<OpcDaGroup>();
+            foreach (var obj in interfaces)
+            {
+                lst.Add(new OpcDaGroup(obj, this));
+            }
+            return lst;
         }
 
         private OpcDaGroup GetGroupByName(string name)
@@ -561,7 +575,7 @@ namespace TitaniumAS.Opc.Client.Da
         {
             try
             {
-                ((IDisposable) @group).Dispose();
+                ((IDisposable)@group).Dispose();
                 if (!rpcFailed)
                 {
                     As<OpcServer>().RemoveGroup(@group.ServerHandle, false);

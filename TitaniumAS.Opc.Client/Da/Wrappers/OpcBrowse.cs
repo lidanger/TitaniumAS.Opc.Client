@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+
 using System.Runtime.InteropServices;
 using TitaniumAS.Opc.Client.Common;
 using TitaniumAS.Opc.Client.Da.Browsing;
@@ -19,7 +19,7 @@ namespace TitaniumAS.Opc.Client.Da.Wrappers
         {
             if (comObject == null) throw new ArgumentNullException("comObject");
             ComObject = DoComCall(comObject, "IUnknown::QueryInterface<IOPCBrowser>",
-                () => comObject.QueryInterface<IOPCBrowse>());
+                () => Com.QueryInterface<IOPCBrowse>(comObject));
         }
 
         internal IOPCBrowse ComObject { get; set; }
@@ -78,10 +78,12 @@ namespace TitaniumAS.Opc.Client.Da.Wrappers
         {
             IntPtr continuationPoint = IntPtr.Zero;
             int dwMaxElementsReturned = OpcConfiguration.BatchSize;
-            var dwBrowseFilter = (OPCBROWSEFILTER) filter;
+            var dwBrowseFilter = (OPCBROWSEFILTER)filter;
             string szElementNameFilter = elementNameFilter ?? string.Empty;
             string szVendorFilter = vendorFilter ?? string.Empty;
-            int[] pdwPropertyIDs = propertyIds != null ? propertyIds.ToArray() : new int[0];
+            var arr = new int[propertyIds.Count];
+            propertyIds.CopyTo(arr, 0);
+            int[] pdwPropertyIDs = propertyIds != null ? arr : new int[0];
             int dwPropertyCount = propertyIds == null ? 0 : pdwPropertyIDs.Length;
 
             var elements = new List<OpcDaBrowseElement>();
@@ -94,9 +96,9 @@ namespace TitaniumAS.Opc.Client.Da.Wrappers
                     {
                         var browseElements = new IntPtr();
                         int pdwCount = 0;
-                        DoComCall(ComObject,"IOpcBrowse::Browse", () => ComObject.Browse(itemId, ref continuationPoint, dwMaxElementsReturned, dwBrowseFilter,
-                                szElementNameFilter, szVendorFilter, returnAllProperties, returnPropertyValues,
-                                dwPropertyCount, pdwPropertyIDs, out pbMoreElements, out pdwCount, out browseElements), itemId, dwMaxElementsReturned, dwBrowseFilter,
+                        DoComCall(ComObject, "IOpcBrowse::Browse", () => ComObject.Browse(itemId, ref continuationPoint, dwMaxElementsReturned, dwBrowseFilter,
+                                 szElementNameFilter, szVendorFilter, returnAllProperties, returnPropertyValues,
+                                 dwPropertyCount, pdwPropertyIDs, out pbMoreElements, out pdwCount, out browseElements), itemId, dwMaxElementsReturned, dwBrowseFilter,
                             szElementNameFilter, szVendorFilter, returnAllProperties, returnPropertyValues,
                             dwPropertyCount, pdwPropertyIDs);
                         ReadBrowseElementsAndDealocate(ref browseElements, pdwCount, elements);
@@ -125,7 +127,9 @@ namespace TitaniumAS.Opc.Client.Da.Wrappers
             {
                 propertyIds = new int[0];
             }
-            string[] pszItemIDs = itemIds.ToArray();
+
+            string[] pszItemIDs = new string[itemIds.Count];
+            itemIds.CopyTo(pszItemIDs, 0);
             int[] pdwPropertyIDs = propertyIds.ToArray();
             DoComCall(ComObject, "IOpcBrowser::GetProperties", () =>
                 ComObject.GetProperties(pszItemIDs.Length, pszItemIDs, returnPropertyValues, pdwPropertyIDs.Length,
@@ -135,10 +139,10 @@ namespace TitaniumAS.Opc.Client.Da.Wrappers
             IntPtr current = itemProperties;
             for (int i = 0; i < itemIds.Count; i++)
             {
-                var opcItemProperties = (OPCITEMPROPERTIES) Marshal.PtrToStructure(current, typeof (OPCITEMPROPERTIES));
+                var opcItemProperties = (OPCITEMPROPERTIES)Marshal.PtrToStructure(current, typeof(OPCITEMPROPERTIES));
                 properties[i] = ReadItemProperties(ref opcItemProperties);
-                Marshal.DestroyStructure(current, typeof (OPCITEMPROPERTIES));
-                current += Marshal.SizeOf(typeof (OPCITEMPROPERTIES));
+                Marshal.DestroyStructure(current, typeof(OPCITEMPROPERTIES));
+                current = new IntPtr((IntPtr.Size == sizeof(Int64) ? current.ToInt64() : current.ToInt32()) + Marshal.SizeOf(typeof(OPCITEMPROPERTIES)));
             }
             Marshal.FreeCoTaskMem(itemProperties);
 
@@ -152,7 +156,7 @@ namespace TitaniumAS.Opc.Client.Da.Wrappers
             for (int i = 0; i < pdwCount; i++)
             {
                 elements.Add(ReadBrowseElementAndDealocate(ref current));
-                current += Marshal.SizeOf(typeof (OPCBROWSEELEMENT));
+                current = new IntPtr((IntPtr.Size == sizeof(Int64) ? current.ToInt64() : current.ToInt32()) + Marshal.SizeOf(typeof(OPCBROWSEELEMENT)));
             }
             Marshal.FreeCoTaskMem(browseElements);
             browseElements = IntPtr.Zero;
@@ -160,7 +164,7 @@ namespace TitaniumAS.Opc.Client.Da.Wrappers
 
         private static OpcDaBrowseElement ReadBrowseElementAndDealocate(ref IntPtr browseElement)
         {
-            var opcBrowseElement = (OPCBROWSEELEMENT) Marshal.PtrToStructure(browseElement, typeof (OPCBROWSEELEMENT));
+            var opcBrowseElement = (OPCBROWSEELEMENT)Marshal.PtrToStructure(browseElement, typeof(OPCBROWSEELEMENT));
             var result = new OpcDaBrowseElement
             {
                 Name = opcBrowseElement.szName,
@@ -169,7 +173,7 @@ namespace TitaniumAS.Opc.Client.Da.Wrappers
                 IsItem = (opcBrowseElement.dwFlagValue & OPC_BROWSE_ISITEM) != 0,
                 ItemProperties = ReadItemProperties(ref opcBrowseElement.ItemProperties)
             };
-            Marshal.DestroyStructure(browseElement, typeof (OPCBROWSEELEMENT));
+            Marshal.DestroyStructure(browseElement, typeof(OPCBROWSEELEMENT));
             return result;
         }
 
@@ -189,18 +193,18 @@ namespace TitaniumAS.Opc.Client.Da.Wrappers
             IntPtr current = pItemProperties;
             for (int i = 0; i < dwNumProperties; i++)
             {
-                var opcitemproperty = (OPCITEMPROPERTY) Marshal.PtrToStructure(current, typeof (OPCITEMPROPERTY));
+                var opcitemproperty = (OPCITEMPROPERTY)Marshal.PtrToStructure(current, typeof(OPCITEMPROPERTY));
                 result[i] = new OpcDaItemProperty
                 {
-                    DataType = TypeConverter.FromVarEnum((VarEnum) opcitemproperty.vtDataType),
+                    DataType = TypeConverter.FromVarEnum((VarEnum)opcitemproperty.vtDataType),
                     PropertyId = opcitemproperty.dwPropertyID,
                     ItemId = opcitemproperty.szItemID,
                     Description = opcitemproperty.szDescription,
                     Value = opcitemproperty.vValue,
                     ErrorId = opcitemproperty.hrErrorID
                 };
-                Marshal.DestroyStructure(current, typeof (OPCITEMPROPERTY));
-                current += Marshal.SizeOf(typeof (OPCITEMPROPERTY));
+                Marshal.DestroyStructure(current, typeof(OPCITEMPROPERTY));
+                current = new IntPtr((IntPtr.Size == sizeof(Int64) ? current.ToInt64() : current.ToInt32()) + Marshal.SizeOf(typeof(OPCITEMPROPERTY)));
             }
             Marshal.FreeCoTaskMem(pItemProperties);
             pItemProperties = IntPtr.Zero;

@@ -15,14 +15,14 @@ namespace TitaniumAS.Opc.Client.Da.Wrappers
         {
             if (comObject == null) throw new ArgumentNullException("comObject");
             ComObject = DoComCall(comObject, "IUnknown::QueryInterface<IOPCSyncIO2>",
-                () => comObject.QueryInterface<IOPCSyncIO2>());
+                () => Com.QueryInterface<IOPCSyncIO2>(comObject));
         }
 
         private IOPCSyncIO2 ComObject { get; set; }
 
         public OPCITEMSTATE[] Read(OPCDATASOURCE dataSource, int[] serverHandles, out HRESULT[] errors)
         {
-            HRESULT[] _errors = {};
+            HRESULT[] _errors = { };
             OPCITEMSTATE[] results = DoComCall(ComObject, "IOpcSyncIO2::Read", () =>
             {
                 OPCITEMSTATE[] ppItemValues;
@@ -48,10 +48,10 @@ namespace TitaniumAS.Opc.Client.Da.Wrappers
             out DateTimeOffset[] timestamps, out HRESULT[] errors)
         {
             int[] intMaxAge = ArrayHelpers.CreateMaxAgeArray(maxAge, maxAge.Count);
-            object[] ppvValues = {};
-            short[] ppwQualities = {};
-            FILETIME[] ppftTimeStamps = {};
-            HRESULT[] _errors = {};
+            object[] ppvValues = { };
+            short[] ppwQualities = { };
+            FILETIME[] ppftTimeStamps = { };
+            HRESULT[] _errors = { };
             DoComCall(ComObject, "IOpcSyncIO2::ReadMaxAge", () =>
                     ComObject.ReadMaxAge(serverHandles.Length, serverHandles, intMaxAge, out ppvValues, out ppwQualities,
                         out ppftTimeStamps, out _errors), serverHandles.Length,

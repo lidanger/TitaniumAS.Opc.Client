@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+
 using TitaniumAS.Opc.Client.Common;
 
 namespace TitaniumAS.Opc.Client.Da
@@ -36,7 +36,7 @@ namespace TitaniumAS.Opc.Client.Da
         /// <returns>The empty item properties.</returns>
         public static OpcDaItemProperties CreateEmpty()
         {
-            return new OpcDaItemProperties {Properties = new OpcDaItemProperty[0]};
+            return new OpcDaItemProperties { Properties = new OpcDaItemProperty[0] };
         }
 
         /// <summary>
@@ -48,9 +48,20 @@ namespace TitaniumAS.Opc.Client.Da
         {
             if (propertyIds == null) throw new ArgumentNullException("propertyIds");
 
-            ILookup<int, int> requiredIds = propertyIds.ToLookup(t => t);
+            var requiredIds = new Dictionary<int, int>();
+            foreach (var pi in propertyIds)
+            {
+                requiredIds[pi] = pi;
+            }
 
-            Properties = Properties.Where(p => requiredIds.Contains(p.PropertyId)).ToArray();
+            var lst = new List<OpcDaItemProperty>();
+            foreach (var p in Properties)
+            {
+                if (requiredIds.ContainsKey(p.PropertyId))
+                    lst.Add(p);
+            }
+
+            Properties = lst.ToArray();
         }
     }
 }

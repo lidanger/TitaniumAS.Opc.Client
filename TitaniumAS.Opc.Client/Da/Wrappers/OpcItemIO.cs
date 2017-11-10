@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+
 using System.Runtime.InteropServices.ComTypes;
 using TitaniumAS.Opc.Client.Common;
 using TitaniumAS.Opc.Client.Da.Internal;
@@ -16,7 +16,7 @@ namespace TitaniumAS.Opc.Client.Da.Wrappers
         {
             if (comObject == null) throw new ArgumentNullException("comObject");
             ComObject = DoComCall(comObject, "IUnknown::QueryInterface<IOPCItemIO>",
-                () => comObject.QueryInterface<IOPCItemIO>());
+                () => Com.QueryInterface<IOPCItemIO>(comObject));
         }
 
         private IOPCItemIO ComObject { get; set; }

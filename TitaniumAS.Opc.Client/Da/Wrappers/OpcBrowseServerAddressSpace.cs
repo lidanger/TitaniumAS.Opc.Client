@@ -15,7 +15,7 @@ namespace TitaniumAS.Opc.Client.Da.Wrappers
         {
             if (comObject == null) throw new ArgumentNullException("comObject");
             ComObject = DoComCall(comObject, "IUnknown::QueryInterface<IOPCBrowseServerAddressSpace>",
-                () => comObject.QueryInterface<IOPCBrowseServerAddressSpace>());
+                () => Com.QueryInterface<IOPCBrowseServerAddressSpace>(comObject));
         }
 
         internal IOPCBrowseServerAddressSpace ComObject { get; set; }
@@ -28,7 +28,7 @@ namespace TitaniumAS.Opc.Client.Da.Wrappers
                 {
                     OPCNAMESPACETYPE nameSpaceType;
                     ComObject.QueryOrganization(out nameSpaceType);
-                    return (OpcDaNamespaceType) nameSpaceType;
+                    return (OpcDaNamespaceType)nameSpaceType;
                 });
             }
         }
@@ -48,11 +48,11 @@ namespace TitaniumAS.Opc.Client.Da.Wrappers
             return DoComCall(ComObject, "IOPCBrowseServerAddressSpace::BrowseOpcItemIDs", () =>
             {
                 IEnumString enumString;
-                ComObject.BrowseOPCItemIDs((OPCBROWSETYPE) browseFilterType, szFilterCriteria,
-                    (short) dataTypeFilter,
-                    (OPCACCESSRIGHTS) accessRightsFilter, out enumString);
+                ComObject.BrowseOPCItemIDs((OPCBROWSETYPE)browseFilterType, szFilterCriteria,
+                    (short)dataTypeFilter,
+                    (OPCACCESSRIGHTS)accessRightsFilter, out enumString);
                 return DoComCall(enumString, "IEnumString::EnumareateAllAndRelease",
-                    () => enumString.EnumareateAllAndRelease(OpcConfiguration.BatchSize).ToArray(),
+                    () => EnumHelpers.EnumareateAllAndRelease(enumString, OpcConfiguration.BatchSize).ToArray(),
                     OpcConfiguration.BatchSize);
             }, browseFilterType, szFilterCriteria, dataTypeFilter,
                 accessRightsFilter);
@@ -75,7 +75,7 @@ namespace TitaniumAS.Opc.Client.Da.Wrappers
                 IEnumString enumString;
                 ComObject.BrowseAccessPaths(itemId, out enumString);
                 return DoComCall(enumString, "IEnumString::EnumareateAllAndRelease",
-                    () => enumString.EnumareateAllAndRelease(OpcConfiguration.BatchSize).ToArray(),
+                    () => EnumHelpers.EnumareateAllAndRelease(enumString, OpcConfiguration.BatchSize).ToArray(),
                     OpcConfiguration.BatchSize);
             }, itemId);
         }

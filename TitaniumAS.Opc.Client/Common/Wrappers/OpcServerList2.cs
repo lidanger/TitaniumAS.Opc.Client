@@ -11,7 +11,7 @@ namespace TitaniumAS.Opc.Client.Common.Wrappers
             if (comServer == null) throw new ArgumentNullException("comServer");
 
             ComServer = DoComCall(comServer, "IUnknown::QueryInterface<IOpcServerList2>",
-                () => comServer.QueryInterface<IOPCServerList2>());
+                () => Com.QueryInterface<IOPCServerList2>(comServer));
         }
 
         private IOPCServerList2 ComServer { get; set; }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
 using Common.Logging;
 using TitaniumAS.Opc.Client.Da.Browsing.Internal;
@@ -82,7 +81,12 @@ namespace TitaniumAS.Opc.Client.Da.Browsing
 
             if (propertiesQuery != null)
             {
-                var properties = GetProperties(elements.Select(e => e.ItemId).ToArray(), propertiesQuery);
+                var lst = new List<string>();
+                foreach (var item in elements)
+                {
+                    lst.Add(item.ItemId);
+                }
+                var properties = GetProperties(lst.ToArray(), propertiesQuery);
                 for (var i = 0; i < elements.Length; i++)
                 {
                     elements[i].ItemProperties = properties[i];
@@ -123,16 +127,16 @@ namespace TitaniumAS.Opc.Client.Da.Browsing
                 var itemId = itemIds[i];
                 try
                 {
-                    OpcDaItemProperties itemProperties = OpcItemProperties.QueryAvailableProperties(itemId);
+                    OpcDaItemProperties itemProperties = OpcItemPropertiesExtensions.QueryAvailableProperties(OpcItemProperties, itemId);
                     if (!propertiesQuery.AllProperties) // filter properties
                     {
                         itemProperties.IntersectProperties(propertiesQuery.PropertyIds);
                     }
                     if (propertiesQuery.ReturnValues) // read property values
                     {
-                        OpcItemProperties.GetItemProperties(itemId, itemProperties);
+                        OpcItemPropertiesExtensions.GetItemProperties(OpcItemProperties, itemId, itemProperties);
                     }
-                    OpcItemProperties.LookupItemIDs(itemId, itemProperties);
+                    OpcItemPropertiesExtensions.LookupItemIDs(OpcItemProperties, itemId, itemProperties);
                     result[i] = itemProperties;
                 }
                 catch (Exception ex)
@@ -147,7 +151,7 @@ namespace TitaniumAS.Opc.Client.Da.Browsing
 
         private OpcDaBrowseElement[] GetElementsImpl(string itemId, OpcDaElementFilter filter)
         {
-            IEnumerable<OpcDaBrowseElement> elements;
+            List<OpcDaBrowseElement> elements = new List<OpcDaBrowseElement>();
             var namespaceType = OpcBrowseServerAddressSpace.Organization;
             VarEnum dataTypeFilter = TypeConverter.ToVarEnum(filter.DataType);
             switch (namespaceType)
@@ -160,25 +164,36 @@ namespace TitaniumAS.Opc.Client.Da.Browsing
                         case OpcDaBrowseFilter.All:
                             var branches = OpcBrowseServerAddressSpace.BrowseOpcItemIds(OpcDaBrowseType.Branch,
                                 filter.Name, dataTypeFilter,
-                                filter.AccessRights)
-                                .Select(CreateBranchBrowseElement);
+                                filter.AccessRights);
+                            foreach (var item in branches)
+                            {
+                                elements.Add(CreateBranchBrowseElement(item));
+                            }
                             var leafs = OpcBrowseServerAddressSpace.BrowseOpcItemIds(OpcDaBrowseType.Leaf, filter.Name,
                                 dataTypeFilter,
-                                filter.AccessRights)
-                                .Select(CreateLeafBrowseElement);
-                            elements = branches.Union(leafs);
+                                filter.AccessRights);
+                            foreach (var item in leafs)
+                            {
+                                elements.Add(CreateLeafBrowseElement(item));
+                            }
                             break;
                         case OpcDaBrowseFilter.Branches:
-                            elements = OpcBrowseServerAddressSpace.BrowseOpcItemIds(OpcDaBrowseType.Branch, filter.Name,
+                            var ids = OpcBrowseServerAddressSpace.BrowseOpcItemIds(OpcDaBrowseType.Branch, filter.Name,
                                 dataTypeFilter,
-                                filter.AccessRights)
-                                .Select(CreateBranchBrowseElement);
+                                filter.AccessRights);
+                            foreach (var item in ids)
+                            {
+                                elements.Add(CreateBranchBrowseElement(item));
+                            }
                             break;
                         case OpcDaBrowseFilter.Items:
-                            elements = OpcBrowseServerAddressSpace.BrowseOpcItemIds(OpcDaBrowseType.Leaf, filter.Name,
+                            var ids2 = OpcBrowseServerAddressSpace.BrowseOpcItemIds(OpcDaBrowseType.Leaf, filter.Name,
                                 dataTypeFilter,
-                                filter.AccessRights)
-                                .Select(CreateLeafBrowseElement);
+                                filter.AccessRights);
+                            foreach (var item in ids2)
+                            {
+                                elements.Add(CreateLeafBrowseElement(item));
+                            }
                             break;
                         default:
                             throw new ArgumentOutOfRangeException();
@@ -187,14 +202,17 @@ namespace TitaniumAS.Opc.Client.Da.Browsing
                 case OpcDaNamespaceType.Flat:
                     if (filter.ElementType == OpcDaBrowseFilter.Branches) // no branches in flat namespace
                     {
-                        elements = Enumerable.Empty<OpcDaBrowseElement>();
+                        //elements = new List<OpcDaBrowseElement>();
                     }
                     else
                     {
-                        elements = OpcBrowseServerAddressSpace.BrowseOpcItemIds(OpcDaBrowseType.Flat, filter.Name,
+                        var ids3 = OpcBrowseServerAddressSpace.BrowseOpcItemIds(OpcDaBrowseType.Flat, filter.Name,
                             dataTypeFilter,
-                            filter.AccessRights)
-                            .Select(CreateLeafBrowseElement);
+                            filter.AccessRights);
+                        foreach (var item in ids3)
+                        {
+                            elements.Add(CreateLeafBrowseElement(item));
+                        }
                     }
                     break;
                 default:
@@ -215,7 +233,7 @@ namespace TitaniumAS.Opc.Client.Da.Browsing
                 Name = name,
                 HasChildren = false,
                 IsItem = true,
-                ItemId = OpcBrowseServerAddressSpace.TryGetItemId(name)
+                ItemId = OpcBrowseServerAddressSpaceExtensions.TryGetItemId(OpcBrowseServerAddressSpace, name)
             };
         }
 
@@ -226,7 +244,7 @@ namespace TitaniumAS.Opc.Client.Da.Browsing
                 Name = name,
                 HasChildren = true,
                 IsItem = false,
-                ItemId = OpcBrowseServerAddressSpace.TryGetItemId(name)
+                ItemId = OpcBrowseServerAddressSpaceExtensions.TryGetItemId(OpcBrowseServerAddressSpace, name)
             };
         }
     }

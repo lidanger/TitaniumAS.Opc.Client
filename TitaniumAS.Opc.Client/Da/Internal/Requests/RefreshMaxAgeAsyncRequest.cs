@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading;
-using System.Threading.Tasks;
+
 using TitaniumAS.Opc.Client.Common;
 using TitaniumAS.Opc.Client.Da.Wrappers;
 

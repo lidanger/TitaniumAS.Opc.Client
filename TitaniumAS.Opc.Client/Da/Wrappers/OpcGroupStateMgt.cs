@@ -7,11 +7,11 @@ namespace TitaniumAS.Opc.Client.Da.Wrappers
 {
     internal class OpcGroupStateMgt : ComWrapper
     {
-        public OpcGroupStateMgt(object comObject, object userData):base(userData)
+        public OpcGroupStateMgt(object comObject, object userData) : base(userData)
         {
             if (comObject == null) throw new ArgumentNullException("comObject");
             ComObject = DoComCall(comObject, "IUnknown::QueryInterface<IOPCGroupStateMgt>",
-                () => comObject.QueryInterface<IOPCGroupStateMgt>());
+                () => Com.QueryInterface<IOPCGroupStateMgt>(comObject));
         }
 
         internal IOPCGroupStateMgt ComObject { get; set; }
@@ -58,32 +58,32 @@ namespace TitaniumAS.Opc.Client.Da.Wrappers
             int[] pRequestedUpdateRate = null;
             if (requestedUpdateRate.HasValue)
             {
-                pRequestedUpdateRate = new[] {(int) requestedUpdateRate.Value.TotalMilliseconds};
+                pRequestedUpdateRate = new[] { (int)requestedUpdateRate.Value.TotalMilliseconds };
             }
             bool[] pActive = null;
             if (active.HasValue)
             {
-                pActive = new[] {active.Value};
+                pActive = new[] { active.Value };
             }
             int[] pTimeBias = null;
             if (timeBias.HasValue)
             {
-                pTimeBias = new[] {(int) timeBias.Value.TotalMinutes};
+                pTimeBias = new[] { (int)timeBias.Value.TotalMinutes };
             }
             float[] pPercentDeadband = null;
             if (percentDeadband.HasValue)
             {
-                pPercentDeadband = new[] {percentDeadband.Value};
+                pPercentDeadband = new[] { percentDeadband.Value };
             }
             int[] pLCID = null;
             if (LCID.HasValue)
             {
-                pLCID = new[] {LCID.Value};
+                pLCID = new[] { LCID.Value };
             }
             int[] phClientGroup = null;
             if (clientHandle.HasValue)
             {
-                phClientGroup = new[] {clientHandle.Value};
+                phClientGroup = new[] { clientHandle.Value };
             }
             DoComCall(ComObject, "IOPCGroupStateMgt::SetState", () =>
                 ComObject.SetState(pRequestedUpdateRate, out pRevisedUpdateRate, pActive, pTimeBias, pPercentDeadband,

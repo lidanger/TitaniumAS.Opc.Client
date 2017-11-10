@@ -12,7 +12,7 @@ namespace TitaniumAS.Opc.Client.Da.Wrappers
         {
             if (comObject == null) throw new ArgumentNullException("comObject");
             ComObject = DoComCall(comObject, "IUnknown::QueryInterface<IOPCItemProperties>",
-                () => comObject.QueryInterface<IOPCItemProperties>());
+                () => Com.QueryInterface<IOPCItemProperties>(comObject));
         }
 
         internal IOPCItemProperties ComObject { get; set; }

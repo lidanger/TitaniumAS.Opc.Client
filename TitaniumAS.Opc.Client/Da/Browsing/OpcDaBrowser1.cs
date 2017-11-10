@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+
 using System.Runtime.InteropServices;
 using TitaniumAS.Opc.Client.Common;
 using TitaniumAS.Opc.Client.Interop.Da;
@@ -50,8 +50,11 @@ namespace TitaniumAS.Opc.Client.Da.Browsing
         {
             foreach (var element in elements)
             {
-                IEnumerable<string> pathPart = Enumerable.Repeat(element.Name, 1);
-                _itemIdToPath[element.ItemId] = _currentPath.Union(pathPart);
+                var lst = new List<string>();
+                lst.AddRange(_currentPath);
+                lst.Add(element.Name);
+
+                _itemIdToPath[element.ItemId] = lst;
             }
         }
 

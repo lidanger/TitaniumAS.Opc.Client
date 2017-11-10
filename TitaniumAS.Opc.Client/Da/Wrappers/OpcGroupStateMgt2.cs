@@ -11,7 +11,7 @@ namespace TitaniumAS.Opc.Client.Da.Wrappers
         {
             if (comObject == null) throw new ArgumentNullException("comObject");
             ComObject = DoComCall(comObject, "IUnknown::QueryInterface<IOPCGroupStateMgt2>",
-                () => comObject.QueryInterface<IOPCGroupStateMgt2>());
+                () => Com.QueryInterface<IOPCGroupStateMgt2>(comObject));
         }
 
         internal IOPCGroupStateMgt2 ComObject { get; set; }

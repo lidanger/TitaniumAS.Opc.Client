@@ -13,7 +13,7 @@ namespace TitaniumAS.Opc.Client.Da.Wrappers
         public OpcItemMgt(object comObject, object userData) : base(userData)
         {
             if (comObject == null) throw new ArgumentNullException("comObject");
-            ComObject = DoComCall(comObject, "IUnknown::QueryInterface<IOPCItemMgt>",() => comObject.QueryInterface<IOPCItemMgt>());
+            ComObject = DoComCall(comObject, "IUnknown::QueryInterface<IOPCItemMgt>",() => Com.QueryInterface<IOPCItemMgt>(comObject));
         }
 
         internal IOPCItemMgt ComObject { get; set; }

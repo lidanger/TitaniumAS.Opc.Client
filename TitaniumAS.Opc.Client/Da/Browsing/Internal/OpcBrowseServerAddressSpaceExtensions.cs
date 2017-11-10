@@ -5,7 +5,7 @@ namespace TitaniumAS.Opc.Client.Da.Browsing.Internal
 {
     static class OpcBrowseServerAddressSpaceExtensions
     {
-        public static string TryGetItemId(this OpcBrowseServerAddressSpace opcBrowseServerAddressSpace, string itemName)
+        public static string TryGetItemId(OpcBrowseServerAddressSpace opcBrowseServerAddressSpace, string itemName)
         {
             try
             {

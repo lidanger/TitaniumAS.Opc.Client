@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+
 using Common.Logging;
 using TitaniumAS.Opc.Client.Common.Internal;
 using TitaniumAS.Opc.Client.Interop.System;
@@ -89,7 +89,7 @@ namespace TitaniumAS.Opc.Client.Common
             }
             finally
             {
-                comObject.ReleaseComServer();
+                Com.ReleaseComServer(comObject);
             }
         }
 
@@ -130,7 +130,7 @@ namespace TitaniumAS.Opc.Client.Common
             }
             finally
             {
-                comObject.ReleaseComServer();
+                Com.ReleaseComServer(comObject);
             }
         }
 
@@ -170,7 +170,7 @@ namespace TitaniumAS.Opc.Client.Common
             }
             finally
             {
-                comObject.ReleaseComServer();
+                Com.ReleaseComServer(comObject);
             }
         }
 
@@ -235,7 +235,7 @@ namespace TitaniumAS.Opc.Client.Common
             }
             finally
             {
-                comObject.ReleaseComServer();
+                Com.ReleaseComServer(comObject);
             }
         }
 
@@ -268,7 +268,7 @@ namespace TitaniumAS.Opc.Client.Common
             }
             catch (Exception ex)
             {
-                Log.WarnFormat("Enumerator '{0}' not created.", ex, typeof (OpcServerList2Enumerator));
+                Log.WarnFormat("Enumerator '{0}' not created.", ex, typeof(OpcServerList2Enumerator));
             }
 
             try
@@ -277,14 +277,19 @@ namespace TitaniumAS.Opc.Client.Common
             }
             catch (Exception ex)
             {
-                Log.WarnFormat("Enumerator '{0}' not created.", ex, typeof (OpcServerListEnumerator));
+                Log.WarnFormat("Enumerator '{0}' not created.", ex, typeof(OpcServerListEnumerator));
             }
             return result;
         }
 
         private Guid[] GetCategoriesGuids(OpcServerCategory[] categories)
         {
-            return categories.Select(c => c.CATID).ToArray();
+            var lst = new List<Guid>();
+            foreach (var cat in categories)
+            {
+                lst.Add(cat.CATID);
+            }
+            return lst.ToArray();
         }
     }
 }

@@ -13,7 +13,7 @@ namespace TitaniumAS.Opc.Client.Da.Internal
             var result = new OpcDaItemProperties[size];
             for (int i = 0; i < result.Length; i++)
             {
-                result[i] = new OpcDaItemProperties {Properties = new OpcDaItemProperty[0]};
+                result[i] = new OpcDaItemProperties { Properties = new OpcDaItemProperty[0] };
             }
             return result;
         }
@@ -45,7 +45,7 @@ namespace TitaniumAS.Opc.Client.Da.Internal
                 var intMaxAge = new int[itemCount];
                 for (int i = 0; i < intMaxAge.Length; i++)
                 {
-                    intMaxAge[i] = unchecked((int) 0xFFFFFFFF);
+                    intMaxAge[i] = unchecked((int)0xFFFFFFFF);
                 }
                 return intMaxAge;
             }
@@ -58,9 +58,9 @@ namespace TitaniumAS.Opc.Client.Da.Internal
                     if (t == TimeSpan.Zero) // FROM DEVICE
                         intMaxAge[i] = 0;
                     else if (t == TimeSpan.MaxValue) // FROM CACHE
-                        intMaxAge[i] = unchecked((int) 0xFFFFFFFF);
+                        intMaxAge[i] = unchecked((int)0xFFFFFFFF);
                     else
-                        intMaxAge[i] = (int) t.TotalMilliseconds;
+                        intMaxAge[i] = (int)t.TotalMilliseconds;
                 }
                 return intMaxAge;
             }
@@ -106,10 +106,10 @@ namespace TitaniumAS.Opc.Client.Da.Internal
             var results = new OPCITEMRESULT[pItemArray.Length];
             for (int i = 0; i < pItemArray.Length; i++)
             {
-                IntPtr current = ppAddResults + i*Marshal.SizeOf(typeof (OPCITEMRESULT));
+                IntPtr current = new IntPtr((IntPtr.Size == sizeof(Int64) ? ppAddResults.ToInt64() : ppAddResults.ToInt32()) + i * Marshal.SizeOf(typeof(OPCITEMRESULT)));
 
-                results[i] = (OPCITEMRESULT) Marshal.PtrToStructure(current, typeof (OPCITEMRESULT));
-                Marshal.DestroyStructure(current, typeof (OPCITEMRESULT));
+                results[i] = (OPCITEMRESULT)Marshal.PtrToStructure(current, typeof(OPCITEMRESULT));
+                Marshal.DestroyStructure(current, typeof(OPCITEMRESULT));
                 Marshal.FreeCoTaskMem(pItemArray[i].pBlob); // Delete allocated blobs
             }
             return results;

@@ -71,10 +71,10 @@ namespace TitaniumAS.Opc.Client.Interop.System
             if (comProxyBlanket != null)
             {
                 var result =
-                    new HRESULT(CoSetProxyBlanket(comObject, (uint) comProxyBlanket.RpcAuthService,
-                        (uint) comProxyBlanket.RpcAuthType,
-                        null, (uint) comProxyBlanket.RpcAuthnLevel, (uint) comProxyBlanket.RpcImpLevel, IntPtr.Zero,
-                        (uint) comProxyBlanket.DwCapabilities));
+                    new HRESULT(CoSetProxyBlanket(comObject, (uint)comProxyBlanket.RpcAuthService,
+                        (uint)comProxyBlanket.RpcAuthType,
+                        null, (uint)comProxyBlanket.RpcAuthnLevel, (uint)comProxyBlanket.RpcImpLevel, IntPtr.Zero,
+                        (uint)comProxyBlanket.DwCapabilities));
                 if (result.Failed)
                 {
                     throw HRESULT.GetExceptionForHR(result);
@@ -124,7 +124,7 @@ namespace TitaniumAS.Opc.Client.Interop.System
                 serverInfo.Deallocate();
             }
 
-            int error = (int) results[0].hr;
+            int error = (int)results[0].hr;
             if (error != 0)
             {
                 throw new ExternalException("CoCreateInstanceEx: " + GetSystemMessage(error), error);
@@ -182,13 +182,13 @@ namespace TitaniumAS.Opc.Client.Interop.System
                     clsid,
                     clsctx,
                     ref coserverInfo,
-                    typeof (IClassFactory2).GUID,
+                    typeof(IClassFactory2).GUID,
                     out unknown);
 
-                factory = (IClassFactory2) unknown;
+                factory = (IClassFactory2)unknown;
 
                 // Set the proper connect authentication level
-                var security = (IClientSecurity) factory;
+                var security = (IClientSecurity)factory;
 
                 uint pAuthnSvc = 0;
                 uint pAuthzSvc = 0;
@@ -246,7 +246,7 @@ namespace TitaniumAS.Opc.Client.Interop.System
         /// <summary>
         /// Releases the server if it is a true COM server.
         /// </summary>
-        public static void ReleaseComServer(this object server)
+        public static void ReleaseComServer(object server)
         {
             if (server != null && server.GetType().IsCOMObject)
             {
@@ -276,7 +276,7 @@ namespace TitaniumAS.Opc.Client.Interop.System
             IntPtr buffer = Marshal.AllocCoTaskMem(MAX_MESSAGE_LENGTH);
 
             int result = FormatMessageW(
-                (int) (FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_FROM_SYSTEM),
+                (int)(FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_FROM_SYSTEM),
                 IntPtr.Zero,
                 error,
                 0,
@@ -295,12 +295,12 @@ namespace TitaniumAS.Opc.Client.Interop.System
             return string.Format("0x{0,0:X}", error);
         }
 
-        public static T QueryInterface<T>(this object comServer) where T : class
+        public static T QueryInterface<T>(object comServer) where T : class
         {
-            return (T) comServer;
+            return (T)comServer;
         }
 
-        public static T TryQueryInterface<T>(this object comServer) where T : class
+        public static T TryQueryInterface<T>(object comServer) where T : class
         {
             return comServer as T;
         }

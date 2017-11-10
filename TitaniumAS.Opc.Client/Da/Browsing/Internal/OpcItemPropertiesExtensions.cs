@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
+
 using System.Runtime.InteropServices;
 using TitaniumAS.Opc.Client.Common;
 using TitaniumAS.Opc.Client.Da.Wrappers;
@@ -9,7 +9,7 @@ namespace TitaniumAS.Opc.Client.Da.Browsing.Internal
 {
     internal static class OpcItemPropertiesExtensions
     {
-        public static OpcDaItemProperty[] GetItemProperties(this OpcItemProperties opcItemProperties, string itemId,
+        public static OpcDaItemProperty[] GetItemProperties(OpcItemProperties opcItemProperties, string itemId,
             IList<int> propertyIds)
         {
             HRESULT[] ppErrors;
@@ -31,14 +31,14 @@ namespace TitaniumAS.Opc.Client.Da.Browsing.Internal
             return properties;
         }
 
-        public static OpcDaItemProperties GetItemProperties(this OpcItemProperties opcItemProperties, string itemId,
+        public static OpcDaItemProperties GetItemProperties(OpcItemProperties opcItemProperties, string itemId,
             OpcDaItemProperties properties)
         {
             opcItemProperties.GetItemProperties(itemId, properties.Properties);
             return properties;
         }
 
-        public static IList<OpcDaItemProperty> GetItemProperties(this OpcItemProperties opcItemProperties, string itemId,
+        public static IList<OpcDaItemProperty> GetItemProperties(OpcItemProperties opcItemProperties, string itemId,
             IList<OpcDaItemProperty> properties)
         {
             HRESULT[] ppErrors;
@@ -67,7 +67,7 @@ namespace TitaniumAS.Opc.Client.Da.Browsing.Internal
             return propertyIds;
         }
 
-        public static OpcDaItemProperties QueryAvailableProperties(this OpcItemProperties opcItemProperties,
+        public static OpcDaItemProperties QueryAvailableProperties(OpcItemProperties opcItemProperties,
             string itemId)
         {
             string[] ppDescriptions;
@@ -75,7 +75,7 @@ namespace TitaniumAS.Opc.Client.Da.Browsing.Internal
             var pdwPropertyIDs = opcItemProperties.QueryAvailableProperties(itemId, out ppDescriptions,
                 out ppvtDataTypes);
 
-            var props = new OpcDaItemProperties {Properties = new OpcDaItemProperty[pdwPropertyIDs.Length]};
+            var props = new OpcDaItemProperties { Properties = new OpcDaItemProperty[pdwPropertyIDs.Length] };
             for (var i = 0; i < pdwPropertyIDs.Length; i++)
             {
                 var property = new OpcDaItemProperty
@@ -89,7 +89,7 @@ namespace TitaniumAS.Opc.Client.Da.Browsing.Internal
             return props;
         }
 
-        public static OpcDaItemProperty[] LookupItemIDs(this OpcItemProperties opcItemProperties, string itemId,
+        public static OpcDaItemProperty[] LookupItemIDs(OpcItemProperties opcItemProperties, string itemId,
             IList<int> propertyIds)
         {
             HRESULT[] ppErrors;
@@ -110,7 +110,7 @@ namespace TitaniumAS.Opc.Client.Da.Browsing.Internal
             return properties;
         }
 
-        public static IList<OpcDaItemProperty> LookupItemIDs(this OpcItemProperties opcItemProperties, string itemId,
+        public static IList<OpcDaItemProperty> LookupItemIDs(OpcItemProperties opcItemProperties, string itemId,
             IList<OpcDaItemProperty> properties)
         {
             var propertyIds = GetPropertyIds(properties);
@@ -128,7 +128,7 @@ namespace TitaniumAS.Opc.Client.Da.Browsing.Internal
             return properties;
         }
 
-        public static OpcDaItemProperties LookupItemIDs(this OpcItemProperties opcItemProperties, string itemId,
+        public static OpcDaItemProperties LookupItemIDs(OpcItemProperties opcItemProperties, string itemId,
             OpcDaItemProperties properties)
         {
             opcItemProperties.LookupItemIDs(itemId, properties.Properties);

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+
 using System.Runtime.InteropServices;
 using TitaniumAS.Opc.Client.Interop.Common;
 using TitaniumAS.Opc.Client.Interop.Da;
@@ -9,7 +9,7 @@ namespace TitaniumAS.Opc.Client.Interop.Helpers
 {
     internal static class EnumHelpers
     {
-        public static List<object> EnumareateAllAndRelease(this IEnumUnknown enumerator, int requestSize = 128)
+        public static List<object> EnumareateAllAndRelease(IEnumUnknown enumerator, int requestSize = 128)
         {
             try
             {
@@ -24,7 +24,7 @@ namespace TitaniumAS.Opc.Client.Interop.Helpers
             }
         }
 
-        public static List<string> EnumareateAllAndRelease(this IEnumString enumerator, int requestSize = 128)
+        public static List<string> EnumareateAllAndRelease(IEnumString enumerator, int requestSize = 128)
         {
             try
             {
@@ -39,7 +39,7 @@ namespace TitaniumAS.Opc.Client.Interop.Helpers
             }
         }
 
-        public static List<OPCITEMATTRIBUTES> EnumareateAllAndRelease(this IEnumOPCItemAttributes enumerator,
+        public static List<OPCITEMATTRIBUTES> EnumareateAllAndRelease(IEnumOPCItemAttributes enumerator,
             int requestSize = 128)
         {
             try
@@ -55,7 +55,7 @@ namespace TitaniumAS.Opc.Client.Interop.Helpers
             }
         }
 
-        public static List<string> EnumerateAll(this IEnumString enumerator, int requestSize = 128)
+        public static List<string> EnumerateAll(IEnumString enumerator, int requestSize = 128)
         {
             if (enumerator == null)
                 return new List<string>();
@@ -66,12 +66,15 @@ namespace TitaniumAS.Opc.Client.Interop.Helpers
             do
             {
                 enumerator.RemoteNext(items.Length, items, out fetched);
-                result.AddRange(items.Take(fetched));
+                for (int i = 0; i < fetched; i++)
+                {
+                    result.Add(items[i]);
+                }
             } while (fetched != 0);
             return result;
         }
 
-        public static List<object> EnumerateAll(this IEnumUnknown enumerator, int requestSize = 128)
+        public static List<object> EnumerateAll(IEnumUnknown enumerator, int requestSize = 128)
         {
             if (enumerator == null)
                 return new List<object>();
@@ -82,12 +85,15 @@ namespace TitaniumAS.Opc.Client.Interop.Helpers
             do
             {
                 enumerator.RemoteNext(items.Length, items, out fetched);
-                result.AddRange(items.Take(fetched));
+                for (int i = 0; i < fetched; i++)
+                {
+                    result.Add(items[i]);
+                }
             } while (fetched != 0);
             return result;
         }
 
-        public static List<OPCITEMATTRIBUTES> EnumerateAll(this IEnumOPCItemAttributes enumerator, int requestSize = 128)
+        public static List<OPCITEMATTRIBUTES> EnumerateAll(IEnumOPCItemAttributes enumerator, int requestSize = 128)
         {
             if (enumerator == null)
                 return new List<OPCITEMATTRIBUTES>();
@@ -100,9 +106,9 @@ namespace TitaniumAS.Opc.Client.Interop.Helpers
                 enumerator.Next(requestSize, out ptr, out fetched);
                 for (var i = 0; i < fetched; i++)
                 {
-                    var current = ptr + i*Marshal.SizeOf(typeof (OPCITEMATTRIBUTES));
-                    result.Add((OPCITEMATTRIBUTES) Marshal.PtrToStructure(current, typeof (OPCITEMATTRIBUTES)));
-                    Marshal.DestroyStructure(current, typeof (OPCITEMATTRIBUTES));
+                    var current = new IntPtr((IntPtr.Size == sizeof(Int64) ? ptr.ToInt64() : ptr.ToInt32()) + i * Marshal.SizeOf(typeof(OPCITEMATTRIBUTES)));
+                    result.Add((OPCITEMATTRIBUTES)Marshal.PtrToStructure(current, typeof(OPCITEMATTRIBUTES)));
+                    Marshal.DestroyStructure(current, typeof(OPCITEMATTRIBUTES));
                 }
                 Marshal.FreeCoTaskMem(ptr);
             } while (fetched != 0);

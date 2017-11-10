@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+
 using System.Threading;
-using System.Threading.Tasks;
+
 using TitaniumAS.Opc.Client.Common;
 using TitaniumAS.Opc.Client.Da.Wrappers;
 using TitaniumAS.Opc.Client.Interop.Da;

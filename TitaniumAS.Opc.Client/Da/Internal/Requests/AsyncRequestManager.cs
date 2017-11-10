@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices.ComTypes;
 using System.Threading;
-using System.Threading.Tasks;
+
 using Common.Logging;
 using TitaniumAS.Opc.Client.Common;
 using TitaniumAS.Opc.Client.Common.Internal;

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+
 using Common.Logging;
 using TitaniumAS.Opc.Client.Da.Wrappers;
 
@@ -23,7 +23,7 @@ namespace TitaniumAS.Opc.Client.Da.Browsing
         {
             OpcDaServer = opcDaServer;
         }
-       
+
         protected OpcBrowse OpcBrowse { get; set; }
 
         /// <summary>
@@ -97,7 +97,12 @@ namespace TitaniumAS.Opc.Client.Da.Browsing
                 // bad server implementation of Browse. For example some versions of Matrikon simulation server
                 // all properties was requested but returned nothing.
                 // Requery properties with GetProperties
-                var properties = GetProperties(opcBrowseElements.Select(e => e.ItemId).ToArray(), propertiesQuery);
+                var lst = new List<string>();
+                foreach (var ele in opcBrowseElements)
+                {
+                    lst.Add(ele.ItemId);
+                }
+                var properties = GetProperties(lst.ToArray(), propertiesQuery);
                 for (var i = 0; i < opcBrowseElements.Length; i++)
                 {
                     opcBrowseElements[i].ItemProperties = properties[i];
@@ -131,17 +136,34 @@ namespace TitaniumAS.Opc.Client.Da.Browsing
 
         private static bool NoPropertiesReturned(OpcDaBrowseElement[] opcBrowseElements)
         {
-            return NoPropertiesReturned(opcBrowseElements.Select(e => e.ItemProperties));
+            var lst = new List<OpcDaItemProperties>();
+            foreach (var item in opcBrowseElements)
+            {
+                lst.Add(item.ItemProperties);
+            }
+
+            return NoPropertiesReturned(lst);
         }
 
         private static bool NoPropertiesReturned(IEnumerable<OpcDaItemProperties> properties)
         {
-            var propertiesWithoutErrors = properties.Where(p => p.ErrorId.Succeeded);
-            if (!propertiesWithoutErrors.Any())
+            var propertiesWithoutErrors = new List<OpcDaItemProperties>();
+            foreach (var item in properties)
+            {
+                if (item.ErrorId.Succeeded)
+                    propertiesWithoutErrors.Add(item);
+            }
+
+            if (propertiesWithoutErrors.Count == 0)
             {
                 return false; // all properties with errors
             }
-            return !propertiesWithoutErrors.Any(p => p.Properties.Length > 0);
+            foreach (var item in propertiesWithoutErrors)
+            {
+                if (item.Properties.Length > 0)
+                    return false;
+            }
+            return true;
         }
     }
 }
